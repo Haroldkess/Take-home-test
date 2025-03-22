@@ -1,0 +1,113 @@
+ext {
+ 
+    playServicesLocationVersion = "21.3.0"
+    removeBackgroundGeolocationDebugSoundsInRelease = false
+}
+
+buildscript {
+    ext.kotlin_version = '1.9.10'
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "${project(':background_fetch').projectDir}/libs"
+        }
+        maven {
+            url "${project(':flutter_background_geolocation').projectDir}/libs"
+        }
+        maven { url 'https://developer.huawei.com/repo/' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        
+    }
+}
+configurations.all {
+    resolutionStrategy {
+        force 'com.google.android.gms:play-services-location:21.3.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "${project(':background_fetch').projectDir}/libs"
+        }
+        maven {
+            url "${project(':flutter_background_geolocation').projectDir}/libs"
+        }
+        maven { url 'https://developer.huawei.com/repo/' }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core-ktx:1.6.0'
+        force 'org.bouncycastle:bcprov-jdk15on:1.70'
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.bouncycastle' &&
+                details.requested.name.startsWith('bcprov-')) {
+                details.useTarget 'org.bouncycastle:bcprov-jdk15on:1.70'
+            }
+        }
+    }
+}
+
+subprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin("com.android.application") ||
+            project.plugins.hasPlugin("com.android.library")) {
+            project.android {
+                compileSdkVersion 35
+                buildToolsVersion "34.0.0"
+            }
+        }
+        if (project.hasProperty("android")) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
+        tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17.toString()
+            targetCompatibility = JavaVersion.VERSION_17.toString()
+        }
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions.jvmTarget = "17"
+        }
+    }
+}
+
+subprojects {
+    afterEvaluate {
+        if (project.plugins.hasPlugin("com.android.application")
+                || project.plugins.hasPlugin("com.android.library")) {
+            if (project.name == "device_info_plus" || project.name == "flutter_kronos_plus" ||
+                project.name == "background_location" || project.name == "flutter_image_compress_common" ||
+                project.name == "health" || project.name == "location" || project.name == "photo_manager" ||
+                project.name == "record_android" || project.name == "social_share") {
+                project.android.compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+            }
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+  project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+  project.evaluationDependsOn(':app')
+}
+tasks.register("clean", Delete) {
+  delete rootProject.buildDir
+}
+
+

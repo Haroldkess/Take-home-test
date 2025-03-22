@@ -1,5 +1,4 @@
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:flutter/foundation.dart';
@@ -60,7 +59,7 @@ class LocationProvider with ChangeNotifier {
   }
 
   Future<void> updateLocationOnMap(double lat, double lng) async {
-    //TODO update my location on the server
+    // update my location on the server
   }
 
   Future<Location?> _getUserLocation() async {

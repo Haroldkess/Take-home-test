@@ -23,7 +23,8 @@ class SplashScreen extends StatefulWidget {
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> with AfterLayoutMixin<SplashScreen> {
+class SplashScreenState extends State<SplashScreen>
+    with AfterLayoutMixin<SplashScreen> {
   @override
   void afterFirstLayout(BuildContext context) => _routeUser();
 
@@ -43,7 +44,8 @@ class SplashScreenState extends State<SplashScreen> with AfterLayoutMixin<Splash
       _redirectToDashboard();
     } catch (e, s) {
       final bool isOffline = e.toString().contains('offline');
-      NotificationsHelper().printIfDebugMode('Error initializing app services: $e\n$s');
+      NotificationsHelper()
+          .printIfDebugMode('Error initializing app services: $e\n$s');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -84,18 +86,21 @@ class SplashScreenState extends State<SplashScreen> with AfterLayoutMixin<Splash
   }
 
   Future<void> updateLocation(AuthProvider auth) async {
-    final LocationProvider locationProvider = Provider.of<LocationProvider>(context, listen: false);
+    final LocationProvider locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
     await locationProvider.init();
 
     final Location? currentLocation = locationProvider.currentLocation;
     final Location? lastSavedLocation = localDataProvider.lastSavedLocation;
 
     if (currentLocation != null && lastSavedLocation == null) {
-      await locationProvider.updateLocationOnMap(currentLocation.latitude!, currentLocation.longitude!);
+      await locationProvider.updateLocationOnMap(
+          currentLocation.latitude!, currentLocation.longitude!,);
     } else if (currentLocation != null && lastSavedLocation != null) {
       final distanceInKm = currentLocation.distanceTo(lastSavedLocation);
       if (distanceInKm > 10) {
-        await locationProvider.updateLocationOnMap(currentLocation.latitude!, currentLocation.longitude!);
+        await locationProvider.updateLocationOnMap(
+            currentLocation.latitude!, currentLocation.longitude!,);
         localDataProvider.updateLastSavedLocation(currentLocation);
       }
     }
@@ -109,7 +114,6 @@ class SplashScreenState extends State<SplashScreen> with AfterLayoutMixin<Splash
     Navigator.pushReplacement(context, LoginScreen.route());
   }
 
-
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -120,7 +124,8 @@ class SplashScreenState extends State<SplashScreen> with AfterLayoutMixin<Splash
           alignment: Alignment.center,
           child: Assets.logoText.svg(
             width: 240,
-            colorFilter: const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
+            colorFilter:
+                const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
           ),
         ),
       ),

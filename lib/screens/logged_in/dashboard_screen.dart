@@ -5,25 +5,30 @@ import '../../animations/fade_animation.dart';
 import '../../components/glass_container.dart';
 import '../../gen/assets.gen.dart';
 import '../../providers/home_provider.dart';
+import '../../providers/location_tracking_provider.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
   static Route<dynamic> route() {
-    return MaterialPageRoute(builder: (_) => const Dashboard(), fullscreenDialog: true);
+    return MaterialPageRoute(
+        builder: (_) => const Dashboard(), fullscreenDialog: true,);
   }
-
   @override
   _DashboardState createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  late final activeIconColor = const ColorFilter.mode(Colors.white, BlendMode.srcIn);
-  late final iconColor = const ColorFilter.mode(Colors.white54, BlendMode.srcIn);
+  late final activeIconColor =
+      const ColorFilter.mode(Colors.white, BlendMode.srcIn);
+  late final iconColor =
+      const ColorFilter.mode(Colors.white54, BlendMode.srcIn);
 
   @override
   Widget build(BuildContext context) {
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final trackingProvider = context.watch<LocationTrackingProvider>();
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Consumer<HomeProvider>(
@@ -35,9 +40,10 @@ class _DashboardState extends State<Dashboard> {
               switchInCurve: Curves.fastOutSlowIn,
               child: homeProvider.selectedScreen,
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-            floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
-            floatingActionButton: FadeAnimation(
+            floatingActionButtonAnimator:
+                FloatingActionButtonAnimator.noAnimation,
+
+            bottomNavigationBar: FadeAnimation(
               duration: 0.4,
               visible: !keyboardOpen,
               child: GlassContainer(
@@ -48,9 +54,9 @@ class _DashboardState extends State<Dashboard> {
                   elevation: 0,
                   selectedFontSize: 0,
                   unselectedFontSize: 0,
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: Colors.black,
                   fixedColor: Colors.white,
-                  showSelectedLabels: false,
+                  showSelectedLabels: true,
                   showUnselectedLabels: false,
                   type: BottomNavigationBarType.fixed,
                   currentIndex: homeProvider.currentIndex,
@@ -58,18 +64,51 @@ class _DashboardState extends State<Dashboard> {
                   items: [
                     BottomNavigationBarItem(
                       icon: Assets.images.home.svg(colorFilter: iconColor),
-                      activeIcon: GlowingIcon(child: Assets.images.homeFilled.svg(colorFilter: activeIconColor)),
+                      activeIcon: GlowingIcon(
+                        child: Assets.images.homeFilled
+                            .svg(colorFilter: activeIconColor),
+                      ),
                       label: 'Main',
                     ),
                     BottomNavigationBarItem(
-                      icon: Assets.images.book.svg(colorFilter: iconColor),
-                      activeIcon: GlowingIcon(child: Assets.images.bookFilled.svg(colorFilter: activeIconColor)),
+                      icon: Assets.images.calendar.svg(colorFilter: iconColor),
+                      activeIcon: GlowingIcon(
+                        child: Assets.images.calendarFilled
+                            .svg(colorFilter: activeIconColor),
+                      ),
                       label: 'Second',
                     ),
                   ],
                 ),
               ),
             ),
+            floatingActionButton: FloatingActionButton.large(
+              elevation: 0,
+              shape: const CircleBorder(
+                side: BorderSide(
+                  color: Colors.white,
+                  width: 10,
+                ),
+              ),
+              onPressed: () {
+                    final trackingProvider = Provider.of<LocationTrackingProvider>(context, listen: false);
+
+
+                if (trackingProvider.isTracking) {
+                  trackingProvider.stopTracking();
+                  return;
+                }
+
+                trackingProvider.startTracking();
+              },
+              backgroundColor: Colors.black,
+              child: Icon(
+                trackingProvider.isTracking ? Icons.stop : Icons.timer,
+                color: trackingProvider.isTracking ? Colors.red : Colors.white,
+              ),
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
           );
         },
       ),

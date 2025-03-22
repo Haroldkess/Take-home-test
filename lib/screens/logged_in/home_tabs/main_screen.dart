@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../components/app_avatar.dart';
+import '../../../components/geo_fencing_status_widget.dart';
+import 'settings_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -7,10 +10,26 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main Screen'),
+        title: const Text('Geo tracker'),
+        actions: [
+      
+          InkWell(
+             onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),);
+            },
+            
+            child: const AppAvatar(),),
+          const SizedBox(
+            width: 10,
+          ),
+        ],
       ),
       body: const Center(
-        child: Text('Welcome to the Main Screen!'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[GeofenceStatusWidget()],
+        ),
       ),
     );
   }

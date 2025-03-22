@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import '../screens/logged_in/home_tabs/main_screen.dart';
-import '../screens/logged_in/home_tabs/second_screen.dart';
+import '../screens/logged_in/home_tabs/summary_screen.dart';
 import 'analytics_provider.dart';
 
 enum AppScreen {
@@ -12,7 +12,7 @@ enum AppScreen {
 class HomeProvider with ChangeNotifier {
   final _screens = [
     const MainScreen(),
-    const SecondScreen(),
+    const SummaryScreen(),
   ];
 
   int _currentIndex = 0;

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "477092569217",
+    "project_id": "distance-tracker-d867f",
+    "storage_bucket": "distance-tracker-d867f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477092569217:android:6df94e372d204cdd252d80",
+        "android_client_info": {
+          "package_name": "com.example.clean_provider_architecture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6tGEFkBuLZdg9ClbGonIiMNdZW6bY_3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

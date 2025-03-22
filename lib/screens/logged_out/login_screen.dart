@@ -1,6 +1,8 @@
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import '../../components/app_button.dart';
+import '../../components/app_form.dart';
 import '../logged_in/dashboard_screen.dart';
 import '../../util/notifications_helper.dart';
 import '../../providers/auth_provider.dart';
@@ -13,7 +15,9 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, this.skipAnimation = false});
 
   static Route<dynamic> route({bool skipAnimation = false}) =>
-      MaterialPageRoute(builder: (_) => LoginScreen(skipAnimation: skipAnimation));
+      MaterialPageRoute(
+        builder: (_) => LoginScreen(skipAnimation: skipAnimation),
+      );
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -45,82 +49,93 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const LoginLogo(),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ValueListenableBuilder(
-                        valueListenable: _isRegistering,
-                        builder: (context, isRegistering, _) {
-                          return Text(
-                            isRegistering ? 'Create Account' : 'Welcome Back',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 32),
-                      TextField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        enabled: !_isLoading.value,
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _passwordController,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                        enabled: !_isLoading.value,
-                      ),
-                      const SizedBox(height: 24),
-                      ValueListenableBuilder(
-                        valueListenable: _isLoading,
-                        builder: (context, isLoading, _) {
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton(
-                              onPressed: isLoading ? null : _handleAuthentication,
-                              child: isLoading
-                                  ? const CircularProgressIndicator()
-                                  : ValueListenableBuilder(
-                                      valueListenable: _isRegistering,
-                                      builder: (context, isRegistering, _) {
-                                        return Text(isRegistering ? 'Register' : 'Login');
-                                      },
-                                    ),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: _isLoading.value
-                            ? null
-                            : () {
-                                _isRegistering.value = !_isRegistering.value;
-                              },
-                        child: ValueListenableBuilder(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ValueListenableBuilder(
                           valueListenable: _isRegistering,
                           builder: (context, isRegistering, _) {
                             return Text(
-                              isRegistering
-                                  ? 'Already have an account? Login'
-                                  : 'Don\'t have an account? Register',
+                              isRegistering ? 'Create Account' : 'Welcome Back',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             );
                           },
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 32),
+                        ReusableTextFormField(
+                          controller: _emailController,
+                          hintText: 'Email',
+                          borderRadius: 10,
+                          keyboardType: TextInputType.emailAddress,
+                          enabled: !_isLoading.value,
+                        ),
+                        const SizedBox(height: 16),
+                        ReusableTextFormField(
+                          controller: _passwordController,
+                          hintText: 'Password',
+                          borderRadius: 10,
+                          obscureText: true,
+                          enabled: !_isLoading.value,
+                        ),
+                        const SizedBox(height: 24),
+                        ValueListenableBuilder(
+                          valueListenable: _isLoading,
+                          builder: (context, isLoading, _) {
+                            return SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: CustomButton(
+                                onPressed:
+                                    isLoading ? null : _handleAuthentication,
+                                text: '',
+                                child: isLoading
+                                    ? const Center(child: SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: const CircularProgressIndicator(),),)
+                                    : ValueListenableBuilder(
+                                        valueListenable: _isRegistering,
+                                        builder: (context, isRegistering, _) {
+                                          return Text(
+                                            isRegistering
+                                                ? 'Register'
+                                                : 'Login',
+                                          );
+                                        },
+                                      ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: _isLoading.value
+                              ? null
+                              : () {
+                                  _isRegistering.value = !_isRegistering.value;
+                                },
+                          child: ValueListenableBuilder(
+                            valueListenable: _isRegistering,
+                            builder: (context, isRegistering, _) {
+                              return Text(
+                                isRegistering
+                                    ? 'Already have an account? Login'
+                                    : 'Don\'t have an account? Register',
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -137,12 +152,14 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text;
 
     if (!_isEmailValid(email)) {
-      NotificationsHelper().showError('Please enter a valid email address.', context: context);
+      NotificationsHelper()
+          .showError('Please enter a valid email address.', context: context);
       return;
     }
 
     if (password.isEmpty) {
-      NotificationsHelper().showError('Please enter your password.', context: context);
+      NotificationsHelper()
+          .showError('Please enter your password.', context: context);
       return;
     }
 
@@ -173,7 +190,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  bool _isEmailValid(String email) => email.contains('@') && email.contains('.');
+  bool _isEmailValid(String email) =>
+      email.contains('@') && email.contains('.');
 
   @override
   void dispose() {

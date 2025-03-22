@@ -1,9 +1,22 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:tools="http://schemas.android.com/tools"
+ package="com.example.clean_provider_architecture">
+
+ <uses-permission android:name="android.permission.VIBRATE" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+<uses-permission android:name="android.permission.INTERNET"/>
+
     <application
+        tools:replace="android:label"
+        android:allowBackup="true"
         android:label="clean_provider_architecture"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
+            
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
@@ -27,6 +40,11 @@
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+
+        <meta-data android:name="com.transistorsoft.locationmanager.license" android:value="YOUR_LICENCE_KEY_HERE" />
+	    <meta-data android:name="com.transistorsoft.locationmanager.hms.license" android:value="YOUR_LICENCE_KEY_HERE" />
+        <meta-data android:name="com.transistorsoft.locationmanager.polygon.license" android:value="YOUR_LICENCE_KEY_HERE" />
+       
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
