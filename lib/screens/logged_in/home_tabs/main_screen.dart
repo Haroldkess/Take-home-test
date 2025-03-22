@@ -5,21 +5,21 @@ import 'settings_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Geo tracker'),
         actions: [
-      
           InkWell(
-             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const SettingsScreen()),);
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
             },
-            
-            child: const AppAvatar(),),
+            child: const AppAvatar(),
+          ),
           const SizedBox(
             width: 10,
           ),

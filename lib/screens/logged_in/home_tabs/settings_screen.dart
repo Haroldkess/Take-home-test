@@ -21,7 +21,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    // Ensure the Hive box "geofenceSettings" is open.
+    // Ensuring the Hive box "geofenceSettings" is open.
     settingsBox = Hive.box('geofenceSettings');
     _loadSettings();
   }
