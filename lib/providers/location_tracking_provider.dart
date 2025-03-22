@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../models/daily_summary.dart';
@@ -6,7 +8,10 @@ import '../services/location_tracking_service/location_service.dart';
 
 class LocationTrackingProvider with ChangeNotifier {
   bool _isTracking = false;
-  bool get isTracking => _isTracking;
+
+  DateTime? _clockInTime;
+  Duration _currentSessionDuration = Duration.zero;
+  Timer? _timer;
 
   // For demonstration, we use default geofence settings.
   // In a real app, these would be loaded from user settings.
@@ -24,40 +29,64 @@ class LocationTrackingProvider with ChangeNotifier {
 
   final LocationService _locationService = LocationService();
 
+  bool get isTracking => _isTracking;
   Map<String, Duration> get summary => _locationService.timeAccumulated;
   LocationService get locationService => _locationService;
+
+  // When tracking is active, compute elapsed time.
+  Duration get currentSessionDuration {
+    if (_isTracking && _clockInTime != null) {
+      return DateTime.now().difference(_clockInTime!);
+    }
+    return _currentSessionDuration;
+  }
 
   /// Start tracking using the latest saved geofence parameters.
   Future<void> startTracking() async {
     final settingsBox = Hive.box('geofenceSettings');
     // Load saved values or use defaults if not set.
-    final double homeLat = settingsBox.get('homeLat',
-        defaultValue: defaultHome.latitude,) as double;
-    final double homeLon = settingsBox.get('homeLon',
-        defaultValue: defaultHome.longitude,) as double;
-    final double officeLat = settingsBox.get('officeLat',
-        defaultValue: defaultOffice.latitude,) as double;
-    final double officeLon = settingsBox.get('officeLon',
-        defaultValue: defaultOffice.longitude,) as double;
+    final double homeLat = settingsBox.get(
+      'homeLat',
+      defaultValue: defaultHome.latitude,
+    ) as double;
+    final double homeLon = settingsBox.get(
+      'homeLon',
+      defaultValue: defaultHome.longitude,
+    ) as double;
+    final double officeLat = settingsBox.get(
+      'officeLat',
+      defaultValue: defaultOffice.latitude,
+    ) as double;
+    final double officeLon = settingsBox.get(
+      'officeLon',
+      defaultValue: defaultOffice.longitude,
+    ) as double;
 
     final home = GeoFence(name: 'Home', latitude: homeLat, longitude: homeLon);
     final office =
         GeoFence(name: 'Office', latitude: officeLat, longitude: officeLon);
-
+    _clockInTime = DateTime.now();
+    _currentSessionDuration = Duration.zero;
     _isTracking = true;
     notifyListeners();
-    await _locationService.fetchInitialLocation();
-    // Wait briefly to allow a more accurate location update.
-
-    await Future.delayed(const Duration(seconds: 2));
-    notifyListeners();
-
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      notifyListeners();
+    });
+   await _locationService.fetchInitialLocation();
     await _locationService.initialize(home: home, office: office);
   }
 
   /// Stop tracking and persist the summary.
   Future<void> stopTracking() async {
+    _currentSessionDuration =
+        DateTime.now().difference(_clockInTime ?? DateTime.now());
+
+    _clockInTime = null;
+
     _isTracking = false;
+    _timer?.cancel();
+
     notifyListeners();
     await _locationService.stopLocationService();
     await _persistSummary();
@@ -83,8 +112,10 @@ class LocationTrackingProvider with ChangeNotifier {
   }
 
   /// Update geofence settings dynamically.
-  Future<void> updateGeofences(
-      {required GeoFence home, required GeoFence office,}) async {
+  Future<void> updateGeofences({
+    required GeoFence home,
+    required GeoFence office,
+  }) async {
     await _locationService.updateGeofences(home: home, office: office);
   }
 }

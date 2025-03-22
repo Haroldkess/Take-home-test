@@ -47,7 +47,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     children: summary.durations.entries.map((entry) {
                       return ListTile(
                         title: Text(entry.key),
-                        trailing: Text(Helpers.formatDuration(entry.value)),
+                        trailing: Text(Helpers.formatFromSeconds(entry.value)),
                       );
                     }).toList(),
                   ),

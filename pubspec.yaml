@@ -104,6 +104,7 @@ dependencies:
   #Extra
   table_calendar: any
   percent_indicator: ^4.2.4
+  numeral: ^3.0.0
 
 
 dev_dependencies:

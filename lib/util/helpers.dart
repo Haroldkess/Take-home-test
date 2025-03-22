@@ -15,7 +15,7 @@ class Helpers {
   /// final formatted = Helpers.formatDuration(3661);
   /// // formatted will be "1h 1m 1s"
   /// ```
-  static String formatDuration(int seconds) {
+  static String formatFromSeconds(int seconds) {
     final duration = Duration(seconds: seconds);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
@@ -36,4 +36,11 @@ class Helpers {
   static String dateToKey(DateTime date) {
     return '${date.year}-${date.month}-${date.day}';
   }
+
+  String formatDuration(Duration duration) {
+  final hours = duration.inHours;
+  final minutes = duration.inMinutes.remainder(60);
+  final seconds = duration.inSeconds.remainder(60);
+  return '${hours}h ${minutes}m ${seconds}s';
+}
 }

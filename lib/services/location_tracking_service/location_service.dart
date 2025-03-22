@@ -35,6 +35,18 @@ class LocationService {
   GeoFence? get homeGeofence => _homeGeofence;
   GeoFence? get officeGeofence => _officeGeofence;
 
+
+    /// Returns the current zone based on location.
+  String? get currentZone {
+    if (homeGeofence != null && _currentLat != null && _currentLon != null && isInsideGeoFence(_currentLat!, _currentLon!, homeGeofence!)) {
+      return 'Home';
+    } else if (officeGeofence != null && _currentLat != null && _currentLon != null && isInsideGeoFence(_currentLat!, _currentLon!, officeGeofence!)) {
+      return 'Office';
+    } else {
+      return 'Traveling';
+    }
+  }
+
     /// Fetches the current device location and updates internal state.
  Future<void> fetchInitialLocation() async {
     try {
