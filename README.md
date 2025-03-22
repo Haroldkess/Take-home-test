@@ -2,7 +2,6 @@
 
 # Flutter Geofencing and Location Tracking App
 
-![App Logo](assets/images/app_logo.png)
 
 ## Overview
 
